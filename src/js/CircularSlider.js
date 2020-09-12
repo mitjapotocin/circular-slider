@@ -4,25 +4,13 @@ export default class CircularSlider {
     this.radius = options.radius
     this.strokeWidth = 30
     this.svgSize = this.radius * 2 + this.strokeWidth
+    this.initialized = this.container.classList.contains('circular-slider-initialized')
 
     this.createCircle()
   }
 
   createCircle() {
-    if (!this.container.classList.contains('circular-slider-initialized')) {
-      this.sliderSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-      this.setSvgSize()
-      this.createSliderContainers()
-      this.sliderSvg.classList.add('circular-slider-svg')
-      this.container.classList.add('circular-slider-container', 'circular-slider-initialized')
-      this.sliderContainer.append(this.sliderSvg)
-    } else {
-      this.sliderSvg = this.container.querySelector('.circular-slider-svg')
-
-      if (this.svgSize > this.sliderSvg.getAttribute('height')) {
-        this.setSvgSize()
-      }
-    }
+    this.initialized ? this.selectSvgAndUpdate() : this.initializeFirstInstance()
 
     this.baseCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
 
@@ -37,6 +25,23 @@ export default class CircularSlider {
     })
 
     this.sliderSvg.append(this.baseCircle)
+  }
+
+  selectSvgAndUpdate() {
+    this.sliderSvg = this.container.querySelector('.circular-slider-svg')
+
+    if (this.svgSize > this.sliderSvg.getAttribute('height')) {
+      this.setSvgSize()
+    }
+  }
+
+  initializeFirstInstance() {
+    this.sliderSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    this.setSvgSize()
+    this.createSliderContainers()
+    this.sliderSvg.classList.add('circular-slider-svg')
+    this.container.classList.add('circular-slider-container', 'circular-slider-initialized')
+    this.sliderContainer.append(this.sliderSvg)
   }
 
   setSvgSize() {
