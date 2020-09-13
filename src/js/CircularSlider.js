@@ -34,6 +34,7 @@ export default class CircularSlider {
     this.circleWrapper = document.createElementNS(this.svgNS, 'g')
     this.baseCircle = document.createElementNS(this.svgNS, 'circle')
     this.indicatorCircle = document.createElementNS(this.svgNS, 'circle')
+    this.clickableCircle = document.createElementNS(this.svgNS, 'circle')
     this.grabber = document.createElementNS(this.svgNS, 'circle')
 
     this.setAttributes(this.baseCircle, {
@@ -59,6 +60,15 @@ export default class CircularSlider {
       'stroke-dasharray': `0  ${this.circumference}`,
     })
 
+    this.setAttributes(this.clickableCircle, {
+      cx: 0,
+      cy: 0,
+      r: this.radius,
+      stroke: 'transparent',
+      fill: 'none',
+      'stroke-width': this.strokeWidth,
+    })
+
     this.setAttributes(this.grabber, {
       cx: 0,
       cy: -this.radius,
@@ -68,7 +78,7 @@ export default class CircularSlider {
       'stroke-width': this.grabberStrokeWidth,
     })
 
-    this.baseCircle.addEventListener('click', this.updatePosition_)
+    this.clickableCircle.addEventListener('click', this.updatePosition_)
 
     this.grabber.addEventListener('mousedown', () => {
       this.grabberDraggable = true
@@ -83,7 +93,7 @@ export default class CircularSlider {
       }
     })
 
-    this.circleWrapper.append(this.baseCircle, this.indicatorCircle, this.grabber)
+    this.circleWrapper.append(this.baseCircle, this.indicatorCircle, this.clickableCircle, this.grabber)
     this.sliderSvg.append(this.circleWrapper)
   }
 
@@ -99,10 +109,22 @@ export default class CircularSlider {
     this.dy = e.pageY - this.svgCenter.y
 
     this.eventAngle = Math.atan2(this.dy, this.dx) + Math.PI / 2
+    if (this.eventAngle < 0) {
+      this.eventAngle += 2 * Math.PI
+    }
+
+    this.updatedCX = this.radius * Math.sin(this.eventAngle)
+    this.updatedCY = -this.radius * Math.cos(this.eventAngle)
 
     this.setAttributes(this.grabber, {
-      cx: this.radius * Math.sin(this.eventAngle),
-      cy: -this.radius * Math.cos(this.eventAngle),
+      cx: this.updatedCX,
+      cy: this.updatedCY,
+    })
+
+    this.valueInCircumference = (this.eventAngle / (2 * Math.PI)) * this.circumference
+
+    this.setAttributes(this.indicatorCircle, {
+      'stroke-dasharray': `${this.valueInCircumference} ${this.circumference - this.valueInCircumference}`,
     })
   }
 

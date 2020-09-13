@@ -11,18 +11,18 @@ const slider = new CircularSlider({
 })
 const slider2 = new CircularSlider({
   container: sliderContainer,
-  color: '#bada55',
+  color: 'hotpink',
   minValue: 10,
   maxValue: 1000,
   step: 33,
-  radius: 100,
+  radius: 110,
 })
 
 const slider3 = new CircularSlider({
   container: sliderContainer,
-  color: '#bada55',
+  color: 'tomato',
   minValue: 10,
   maxValue: 1000,
   step: 33,
-  radius: 185,
+  radius: 190,
 })
