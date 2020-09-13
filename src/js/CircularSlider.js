@@ -7,17 +7,19 @@ export default class CircularSlider {
     this.maxValue = options.maxValue
     this.step = options.step
 
+    this.svgNS = 'http://www.w3.org/2000/svg'
     this.circumference = 2 * Math.PI * this.radius
     this.range = this.maxValue - this.minValue
     this.baseStrokeColor = '#dadada'
     this.strokeWidth = 30
+    this.grabberStrokeWidth = 2
     this.strokeGap = 2
     this.strokeDash = 10
     this.strokeDashCalculated =
       this.strokeDash +
       (this.circumference % (this.strokeDash + this.strokeGap)) /
         Math.floor(this.circumference / (this.strokeDash + this.strokeGap))
-    this.svgSize = this.radius * 2 + this.strokeWidth
+    this.svgSize = this.radius * 2 + this.strokeWidth + 2 * this.grabberStrokeWidth
     this.initialized = this.container.classList.contains('circular-slider-initialized')
 
     this.createCircle()
@@ -26,8 +28,10 @@ export default class CircularSlider {
   createCircle() {
     this.initialized ? this.selectSvgAndUpdate() : this.initializeFirstInstance()
 
-    this.baseCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-    this.indicatorCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    this.circleWrapper = document.createElementNS(this.svgNS, 'g')
+    this.baseCircle = document.createElementNS(this.svgNS, 'circle')
+    this.indicatorCircle = document.createElementNS(this.svgNS, 'circle')
+    this.grabber = document.createElementNS(this.svgNS, 'circle')
 
     this.setAttributes(this.baseCircle, {
       cx: 0,
@@ -51,8 +55,17 @@ export default class CircularSlider {
       'stroke-dasharray': `0  ${this.circumference}`,
     })
 
-    this.sliderSvg.append(this.baseCircle)
-    this.sliderSvg.append(this.indicatorCircle)
+    this.setAttributes(this.grabber, {
+      cx: this.radius,
+      cy: 0,
+      r: this.strokeWidth / 2 + this.grabberStrokeWidth / 2,
+      fill: '#ffffff',
+      stroke: '#cccccc',
+      'stroke-width': this.grabberStrokeWidth,
+    })
+
+    this.circleWrapper.append(this.baseCircle, this.indicatorCircle, this.grabber)
+    this.sliderSvg.append(this.circleWrapper)
   }
 
   selectSvgAndUpdate() {
@@ -64,7 +77,7 @@ export default class CircularSlider {
   }
 
   initializeFirstInstance() {
-    this.sliderSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    this.sliderSvg = document.createElementNS(this.svgNS, 'svg')
     this.setSvgSize()
     this.createSliderContainers()
     this.sliderSvg.classList.add('circular-slider-svg')
