@@ -8,6 +8,7 @@ export default class CircularSlider {
     this.step = options.step
 
     this.svgNS = 'http://www.w3.org/2000/svg'
+    this.grabberDraggable = false
     this.circumference = 2 * Math.PI * this.radius
     this.range = this.maxValue - this.minValue
     this.baseStrokeColor = '#dadada'
@@ -22,6 +23,8 @@ export default class CircularSlider {
     this.svgSize = this.radius * 2 + this.strokeWidth + 2 * this.grabberStrokeWidth
     this.initialized = this.container.classList.contains('circular-slider-initialized')
 
+    this.updatePosition_ = this.updatePosition.bind(this)
+
     this.createCircle()
   }
 
@@ -33,16 +36,13 @@ export default class CircularSlider {
     this.indicatorCircle = document.createElementNS(this.svgNS, 'circle')
     this.grabber = document.createElementNS(this.svgNS, 'circle')
 
-    this.setAttributes(this.circleWrapper, {
-      transform: 'rotate(-90, 0, 0)',
-    })
-
     this.setAttributes(this.baseCircle, {
       cx: 0,
       cy: 0,
       r: this.radius,
       stroke: this.baseStrokeColor,
       fill: 'none',
+      transform: 'rotate(-90, 0, 0)',
       'stroke-width': this.strokeWidth,
       'stroke-dasharray': `${this.strokeDashCalculated} ${this.strokeGap}`,
     })
@@ -54,21 +54,56 @@ export default class CircularSlider {
       stroke: this.color,
       opacity: 0.6,
       fill: 'none',
+      transform: 'rotate(-90, 0, 0)',
       'stroke-width': this.strokeWidth,
       'stroke-dasharray': `0  ${this.circumference}`,
     })
 
     this.setAttributes(this.grabber, {
-      cx: this.radius,
-      cy: 0,
+      cx: 0,
+      cy: -this.radius,
       r: this.strokeWidth / 2 + this.grabberStrokeWidth / 2,
       fill: '#ffffff',
       stroke: '#cccccc',
       'stroke-width': this.grabberStrokeWidth,
     })
 
+    this.baseCircle.addEventListener('click', this.updatePosition_)
+
+    this.grabber.addEventListener('mousedown', () => {
+      this.grabberDraggable = true
+
+      document.addEventListener('mousemove', this.updatePosition_)
+    })
+
+    document.addEventListener('mouseup', () => {
+      if (this.grabberDraggable) {
+        document.removeEventListener('mousemove', this.updatePosition_)
+        this.grabberDraggable = false
+      }
+    })
+
     this.circleWrapper.append(this.baseCircle, this.indicatorCircle, this.grabber)
     this.sliderSvg.append(this.circleWrapper)
+  }
+
+  updatePosition(e) {
+    this.sliderSvgDimensions = this.sliderSvg.getBoundingClientRect()
+
+    this.svgCenter = {
+      x: this.sliderSvgDimensions.x + this.sliderSvgDimensions.height / 2,
+      y: this.sliderSvgDimensions.y + this.sliderSvgDimensions.width / 2,
+    }
+
+    this.dx = e.pageX - this.svgCenter.x
+    this.dy = e.pageY - this.svgCenter.y
+
+    this.eventAngle = Math.atan2(this.dy, this.dx) + Math.PI / 2
+
+    this.setAttributes(this.grabber, {
+      cx: this.radius * Math.sin(this.eventAngle),
+      cy: -this.radius * Math.cos(this.eventAngle),
+    })
   }
 
   selectSvgAndUpdate() {
