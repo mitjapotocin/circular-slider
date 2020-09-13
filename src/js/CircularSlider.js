@@ -33,13 +33,16 @@ export default class CircularSlider {
     this.indicatorCircle = document.createElementNS(this.svgNS, 'circle')
     this.grabber = document.createElementNS(this.svgNS, 'circle')
 
+    this.setAttributes(this.circleWrapper, {
+      transform: 'rotate(-90, 0, 0)',
+    })
+
     this.setAttributes(this.baseCircle, {
       cx: 0,
       cy: 0,
       r: this.radius,
       stroke: this.baseStrokeColor,
       fill: 'none',
-      transform: 'rotate(-90, 0, 0)',
       'stroke-width': this.strokeWidth,
       'stroke-dasharray': `${this.strokeDashCalculated} ${this.strokeGap}`,
     })
