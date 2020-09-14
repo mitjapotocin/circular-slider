@@ -120,7 +120,7 @@ export default class CircularSlider {
     //Touch events
     this.grabber.addEventListener('touchstart', () => {
       this.grabberDraggable = true
-      document.addEventListener('touchmove', updateValues_)
+      document.addEventListener('touchmove', updateValues_, { passive: false })
     })
 
     document.addEventListener('touchend', () => {
@@ -135,6 +135,8 @@ export default class CircularSlider {
   }
 
   updateValues(e) {
+    e.preventDefault()
+
     const sliderSvgDimensions = this.sliderSvg.getBoundingClientRect()
 
     const svgCenter = {
