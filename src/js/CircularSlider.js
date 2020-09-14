@@ -25,12 +25,10 @@ export default class CircularSlider {
     this.svgSize = this.radius * 2 + this.strokeWidth + 2 * this.grabberStrokeWidth
     this.initialized = this.container.classList.contains('circular-slider-initialized')
 
-    this.updatePosition_ = this.updatePosition.bind(this)
-
-    this.createCircle()
+    this.initialize()
   }
 
-  createCircle() {
+  initialize() {
     this.initialized ? this.selectSvgAndUpdate() : this.initializeFirstInstance()
 
     //TODO: create separate method
@@ -94,17 +92,19 @@ export default class CircularSlider {
       'stroke-width': this.grabberStrokeWidth,
     })
 
-    this.clickableCircle.addEventListener('click', this.updatePosition_)
+    const updateValues_ = this.updateValues.bind(this)
+
+    this.clickableCircle.addEventListener('click', updateValues_)
 
     this.grabber.addEventListener('mousedown', () => {
       this.grabberDraggable = true
 
-      document.addEventListener('mousemove', this.updatePosition_)
+      document.addEventListener('mousemove', updateValues_)
     })
 
     document.addEventListener('mouseup', () => {
       if (this.grabberDraggable) {
-        document.removeEventListener('mousemove', this.updatePosition_)
+        document.removeEventListener('mousemove', updateValues_)
         this.grabberDraggable = false
       }
     })
@@ -113,7 +113,7 @@ export default class CircularSlider {
     this.sliderSvg.append(this.circleWrapper)
   }
 
-  updatePosition(e) {
+  updateValues(e) {
     const sliderSvgDimensions = this.sliderSvg.getBoundingClientRect()
 
     const svgCenter = {
@@ -121,13 +121,12 @@ export default class CircularSlider {
       y: sliderSvgDimensions.y + sliderSvgDimensions.width / 2,
     }
 
+    // Event position difference from center
     const dx = e.pageX - svgCenter.x
-    const dy = e.pageY - svgCenter.y
+    const dy = svgCenter.y - e.pageY
 
-    let eventAngle = Math.atan2(dy, dx) + Math.PI / 2
-    if (eventAngle < 0) {
-      eventAngle += 2 * Math.PI
-    }
+    //Positive angle value in radians
+    const eventAngle = (Math.atan2(dx, dy) + 2 * Math.PI) % (2 * Math.PI)
 
     const stepAdjustedAngle = Math.round(eventAngle / this.stepAngle) * this.stepAngle
 
