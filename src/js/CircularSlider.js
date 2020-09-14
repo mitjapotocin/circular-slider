@@ -102,17 +102,30 @@ export default class CircularSlider {
 
     const updateValues_ = this.updateValues.bind(this)
 
+    //Click events
     clickableCircle.addEventListener('click', updateValues_)
 
     this.grabber.addEventListener('mousedown', () => {
       this.grabberDraggable = true
-
       document.addEventListener('mousemove', updateValues_)
     })
 
     document.addEventListener('mouseup', () => {
       if (this.grabberDraggable) {
         document.removeEventListener('mousemove', updateValues_)
+        this.grabberDraggable = false
+      }
+    })
+
+    //Touch events
+    this.grabber.addEventListener('touchstart', () => {
+      this.grabberDraggable = true
+      document.addEventListener('touchmove', updateValues_)
+    })
+
+    document.addEventListener('touchend', () => {
+      if (this.grabberDraggable) {
+        document.removeEventListener('touchmove', updateValues_)
         this.grabberDraggable = false
       }
     })
@@ -129,9 +142,12 @@ export default class CircularSlider {
       y: sliderSvgDimensions.y + sliderSvgDimensions.width / 2,
     }
 
+    const pageX = e.pageX || e.changedTouches[0].pageX
+    const pageY = e.pageY || e.changedTouches[0].pageY
+
     // Event position difference from center
-    const dx = e.pageX - svgCenter.x
-    const dy = svgCenter.y - e.pageY
+    const dx = pageX - svgCenter.x
+    const dy = svgCenter.y - pageY
 
     //Positive angle value in radians
     const eventAngle = (Math.atan2(dx, dy) + 2 * Math.PI) % (2 * Math.PI)
