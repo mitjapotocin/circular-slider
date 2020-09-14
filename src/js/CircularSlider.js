@@ -31,6 +31,20 @@ export default class CircularSlider {
   createCircle() {
     this.initialized ? this.selectSvgAndUpdate() : this.initializeFirstInstance()
 
+    //TODO: create separate method
+    this.legend = document.createElement('div')
+    this.legend.classList.add('legend-item')
+    this.legendValue = document.createElement('span')
+    this.legendValue.classList.add('legend-value')
+    this.legendColorIndicator = document.createElement('div')
+    this.legendColorIndicator.classList.add('legend-color-indicator')
+    this.legendColorIndicator.style.background = this.color
+
+    this.legendValue.innerHTML = this.minValue
+
+    this.legend.append(this.legendValue, this.legendColorIndicator)
+    this.legendContainer.append(this.legend)
+
     this.circleWrapper = document.createElementNS(this.svgNS, 'g')
     this.baseCircle = document.createElementNS(this.svgNS, 'circle')
     this.indicatorCircle = document.createElementNS(this.svgNS, 'circle')
@@ -126,10 +140,14 @@ export default class CircularSlider {
     this.setAttributes(this.indicatorCircle, {
       'stroke-dasharray': `${this.valueInCircumference} ${this.circumference - this.valueInCircumference}`,
     })
+
+    this.updatedValue = (this.eventAngle / (2 * Math.PI)) * this.range + this.minValue
+    this.legendValue.innerHTML = Math.round(this.updatedValue)
   }
 
   selectSvgAndUpdate() {
     this.sliderSvg = this.container.querySelector('.circular-slider-svg')
+    this.legendContainer = this.container.querySelector('.legend-container')
 
     if (this.svgSize > this.sliderSvg.getAttribute('height')) {
       this.setSvgSize()
