@@ -1,6 +1,7 @@
 import CircularSlider from './CircularSlider'
 
 const sliderContainer = document.querySelector('#slider-container')
+const sliderContainer2 = document.querySelector('#slider-container2')
 const slider = new CircularSlider({
   container: sliderContainer,
   color: '#bada55',
@@ -25,4 +26,21 @@ const slider3 = new CircularSlider({
   maxValue: 1000,
   step: 50,
   radius: 190,
+})
+
+const slider4 = new CircularSlider({
+  container: sliderContainer2,
+  color: 'tomato',
+  minValue: 0,
+  maxValue: 1000,
+  step: 50,
+  radius: 190,
+})
+const slider5 = new CircularSlider({
+  container: sliderContainer2,
+  color: 'tomato',
+  minValue: 0,
+  maxValue: 1000,
+  step: 50,
+  radius: 250,
 })
