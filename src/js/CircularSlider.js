@@ -98,6 +98,7 @@ export default class CircularSlider {
       fill: '#ffffff',
       stroke: '#cccccc',
       'stroke-width': this.grabberStrokeWidth,
+      style: 'touch-action: none',
     })
 
     const updateValues_ = this.updateValues.bind(this)
@@ -118,10 +119,16 @@ export default class CircularSlider {
     })
 
     //Touch events
-    this.grabber.addEventListener('touchstart', () => {
-      this.grabberDraggable = true
-      document.addEventListener('touchmove', updateValues_, { passive: false })
-    })
+    this.grabber.addEventListener(
+      'touchstart',
+      (e) => {
+        e.preventDefault()
+
+        this.grabberDraggable = true
+        document.addEventListener('touchmove', updateValues_, { passive: false })
+      },
+      { passive: false }
+    )
 
     document.addEventListener('touchend', () => {
       if (this.grabberDraggable) {
