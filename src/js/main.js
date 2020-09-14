@@ -14,7 +14,7 @@ const slider2 = new CircularSlider({
   color: 'hotpink',
   minValue: 10,
   maxValue: 1000,
-  step: 20,
+  step: 21,
   radius: 110,
 })
 
