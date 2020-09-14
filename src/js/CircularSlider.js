@@ -9,8 +9,10 @@ export default class CircularSlider {
 
     this.svgNS = 'http://www.w3.org/2000/svg'
     this.grabberDraggable = false
-    this.circumference = 2 * Math.PI * this.radius
     this.range = this.maxValue - this.minValue
+    this.circumference = 2 * Math.PI * this.radius
+    this.stepInCircumference = (this.range / this.step) * this.circumference
+    this.stepAngle = (this.step / this.range) * 2 * Math.PI
     this.baseStrokeColor = '#dadada'
     this.strokeWidth = 30
     this.grabberStrokeWidth = 2
@@ -112,37 +114,37 @@ export default class CircularSlider {
   }
 
   updatePosition(e) {
-    this.sliderSvgDimensions = this.sliderSvg.getBoundingClientRect()
+    const sliderSvgDimensions = this.sliderSvg.getBoundingClientRect()
 
-    this.svgCenter = {
-      x: this.sliderSvgDimensions.x + this.sliderSvgDimensions.height / 2,
-      y: this.sliderSvgDimensions.y + this.sliderSvgDimensions.width / 2,
+    const svgCenter = {
+      x: sliderSvgDimensions.x + sliderSvgDimensions.height / 2,
+      y: sliderSvgDimensions.y + sliderSvgDimensions.width / 2,
     }
 
-    this.dx = e.pageX - this.svgCenter.x
-    this.dy = e.pageY - this.svgCenter.y
+    const dx = e.pageX - svgCenter.x
+    const dy = e.pageY - svgCenter.y
 
-    this.eventAngle = Math.atan2(this.dy, this.dx) + Math.PI / 2
-    if (this.eventAngle < 0) {
-      this.eventAngle += 2 * Math.PI
+    let eventAngle = Math.atan2(dy, dx) + Math.PI / 2
+    if (eventAngle < 0) {
+      eventAngle += 2 * Math.PI
     }
 
-    this.updatedCX = this.radius * Math.sin(this.eventAngle)
-    this.updatedCY = -this.radius * Math.cos(this.eventAngle)
+    const stepAdjustedAngle = Math.round(eventAngle / this.stepAngle) * this.stepAngle
 
     this.setAttributes(this.grabber, {
-      cx: this.updatedCX,
-      cy: this.updatedCY,
+      cx: this.radius * Math.sin(stepAdjustedAngle),
+      cy: -this.radius * Math.cos(stepAdjustedAngle),
     })
 
-    this.valueInCircumference = (this.eventAngle / (2 * Math.PI)) * this.circumference
+    const valueInCircumference = (stepAdjustedAngle / (2 * Math.PI)) * this.circumference
 
     this.setAttributes(this.indicatorCircle, {
-      'stroke-dasharray': `${this.valueInCircumference} ${this.circumference - this.valueInCircumference}`,
+      'stroke-dasharray': `${valueInCircumference} ${this.circumference - valueInCircumference}`,
     })
 
-    this.updatedValue = (this.eventAngle / (2 * Math.PI)) * this.range + this.minValue
-    this.legendValue.innerHTML = Math.round(this.updatedValue)
+    const updatedValue = (eventAngle / (2 * Math.PI)) * this.range + this.minValue
+    const stepAdjustedValue = Math.round(updatedValue / this.step) * this.step
+    this.legendValue.innerHTML = stepAdjustedValue
   }
 
   selectSvgAndUpdate() {
