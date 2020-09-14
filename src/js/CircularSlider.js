@@ -142,8 +142,8 @@ export default class CircularSlider {
       y: sliderSvgDimensions.y + sliderSvgDimensions.width / 2,
     }
 
-    const pageX = e.pageX || e.changedTouches[0].pageX
-    const pageY = e.pageY || e.changedTouches[0].pageY
+    const pageX = e.clientX || e.changedTouches[0].clientX
+    const pageY = e.clientY || e.changedTouches[0].clientY
 
     // Event position difference from center
     const dx = pageX - svgCenter.x
