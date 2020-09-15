@@ -14,14 +14,13 @@ export default class CircularSlider {
     this.stepInCircumference = (this.range / this.step) * this.circumference
     this.stepAngle = (this.step / this.range) * 2 * Math.PI
     this.baseStrokeColor = '#dadada'
+    this.grabberStroke = '#cccccc'
+    this.grabberFill = '#ffffff'
     this.strokeWidth = 30
     this.grabberStrokeWidth = 2
     this.strokeGap = 2
     this.strokeDash = 10
-    this.strokeDashCalculated =
-      this.strokeDash +
-      (this.circumference % (this.strokeDash + this.strokeGap)) /
-        Math.floor(this.circumference / (this.strokeDash + this.strokeGap))
+
     this.svgSize = this.radius * 2 + this.strokeWidth + 2 * this.grabberStrokeWidth
     this.initialized = this.container.classList.contains('circular-slider-initialized')
 
@@ -59,6 +58,17 @@ export default class CircularSlider {
     this.grabber = document.createElementNS(this.svgNS, 'circle')
     this.indicatorCircle = document.createElementNS(this.svgNS, 'circle')
 
+    // Circle stroke dash is relative to step value
+    let strokeDashCalculated = (this.step / this.range) * this.circumference - this.strokeGap
+
+    // Not smaller than stroke gap
+    // Adjust stroke dash, so that the circle always ends with a stroke gap
+    if (strokeDashCalculated < this.strokeGap) {
+      strokeDashCalculated =
+        this.strokeGap +
+        (this.circumference % (2 * this.strokeGap)) / Math.floor(this.circumference / (2 * this.strokeGap))
+    }
+
     this.setAttributes(baseCircle, {
       cx: 0,
       cy: 0,
@@ -67,7 +77,7 @@ export default class CircularSlider {
       fill: 'none',
       transform: 'rotate(-90, 0, 0)',
       'stroke-width': this.strokeWidth,
-      'stroke-dasharray': `${this.strokeDashCalculated} ${this.strokeGap}`,
+      'stroke-dasharray': `${strokeDashCalculated} ${this.strokeGap}`,
     })
 
     this.setAttributes(this.indicatorCircle, {
@@ -75,7 +85,7 @@ export default class CircularSlider {
       cy: 0,
       r: this.radius,
       stroke: this.color,
-      opacity: 0.6,
+      opacity: 0.7,
       fill: 'none',
       transform: 'rotate(-90, 0, 0)',
       'stroke-width': this.strokeWidth,
@@ -95,15 +105,15 @@ export default class CircularSlider {
       cx: 0,
       cy: -this.radius,
       r: this.strokeWidth / 2 + this.grabberStrokeWidth / 2,
-      fill: '#ffffff',
-      stroke: '#cccccc',
+      fill: this.grabberFill,
+      stroke: this.grabberStroke,
       'stroke-width': this.grabberStrokeWidth,
       style: 'touch-action: none',
     })
 
     const updateValues_ = this.updateValues.bind(this)
 
-    //Click events
+    // Click events
     clickableCircle.addEventListener('click', updateValues_)
 
     this.grabber.addEventListener('mousedown', () => {
@@ -118,7 +128,7 @@ export default class CircularSlider {
       }
     })
 
-    //Touch events
+    // Touch events
     this.grabber.addEventListener(
       'touchstart',
       (e) => {
@@ -137,6 +147,7 @@ export default class CircularSlider {
       }
     })
 
+    // Append all elements to SVG
     circleWrapper.append(baseCircle, this.indicatorCircle, clickableCircle, this.grabber)
     this.sliderSvg.append(circleWrapper)
   }
@@ -158,7 +169,7 @@ export default class CircularSlider {
     const dx = pageX - svgCenter.x
     const dy = svgCenter.y - pageY
 
-    //Positive angle value in radians
+    // Positive angle value in radians
     const eventAngle = (Math.atan2(dx, dy) + 2 * Math.PI) % (2 * Math.PI)
 
     const stepAdjustedAngle = Math.round(eventAngle / this.stepAngle) * this.stepAngle
