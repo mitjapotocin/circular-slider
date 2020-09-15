@@ -6,6 +6,7 @@ export default class CircularSlider {
     this.minValue = options.minValue
     this.maxValue = options.maxValue
     this.step = options.step
+    this.name = options.name || ''
 
     this.svgNS = 'http://www.w3.org/2000/svg'
     this.grabberDraggable = false
@@ -19,8 +20,6 @@ export default class CircularSlider {
     this.strokeWidth = 30
     this.grabberStrokeWidth = 2
     this.strokeGap = 2
-    this.strokeDash = 10
-
     this.svgSize = this.radius * 2 + this.strokeWidth + 2 * this.grabberStrokeWidth
     this.initialized = this.container.classList.contains('circular-slider-initialized')
 
@@ -37,17 +36,26 @@ export default class CircularSlider {
   createLegend() {
     const legend = document.createElement('div')
     const legendColorIndicator = document.createElement('div')
+    const legendName = document.createElement('span')
     this.legendValue = document.createElement('span')
 
-    legend.classList.add('legend-item')
+    legendName.classList.add('legend-name')
     this.legendValue.classList.add('legend-value')
 
-    legendColorIndicator.classList.add('legend-color-indicator')
-    legendColorIndicator.style.background = this.color
+    this.setAttributes(legend, {
+      class: 'legend-item',
+      style: `border-color: ${this.color}`,
+    })
+
+    this.setAttributes(legendColorIndicator, {
+      class: 'legend-color-indicator',
+      style: `background: ${this.color}`,
+    })
 
     this.legendValue.innerHTML = this.minValue
+    legendName.innerHTML = this.name
 
-    legend.append(this.legendValue, legendColorIndicator)
+    legend.append(this.legendValue, legendName, legendColorIndicator)
     this.legendContainer.append(legend)
   }
 

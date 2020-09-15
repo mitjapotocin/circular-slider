@@ -11,6 +11,7 @@ const slider1 = new CircularSlider({
   maxValue: 100,
   step: 25,
   radius: 150,
+  name: 'Fork',
 })
 const slider2 = new CircularSlider({
   container: sliderContainer,
@@ -19,6 +20,7 @@ const slider2 = new CircularSlider({
   maxValue: 1000,
   step: 100,
   radius: 110,
+  name: 'Shock',
 })
 
 const slider3 = new CircularSlider({
@@ -28,6 +30,7 @@ const slider3 = new CircularSlider({
   maxValue: 5000,
   step: 50,
   radius: 190,
+  name: 'Handlebars',
 })
 
 const slider5 = new CircularSlider({
@@ -51,7 +54,6 @@ const slider6 = new CircularSlider({
 
 const slider7 = new CircularSlider({
   container: sliderContainer2,
-  color: 'tomato',
   minValue: 0,
   maxValue: 1000,
   step: 10,
