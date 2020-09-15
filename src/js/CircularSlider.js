@@ -9,6 +9,7 @@ minValue (Number) - mandatory
 maxValue (Number) - mandatory
 step (Number) - mandatory
 name (String) - optional
+currency (Currency) - optional
 */
 
 export default class CircularSlider {
@@ -20,6 +21,7 @@ export default class CircularSlider {
     this.maxValue = options.maxValue
     this.step = options.step
     this.name = options.name || ''
+    this.currency = options.currency || ''
 
     this.svgNS = 'http://www.w3.org/2000/svg'
     this.grabberDraggable = false
@@ -65,7 +67,7 @@ export default class CircularSlider {
       style: `background: ${this.color}`,
     })
 
-    this.legendValue.innerHTML = this.minValue
+    this.legendValue.innerHTML = this.currency + this.minValue
     legendName.innerHTML = this.name
 
     legend.append(this.legendValue, legendName, legendColorIndicator)
@@ -206,7 +208,8 @@ export default class CircularSlider {
       'stroke-dasharray': `${valueInCircumference} ${this.circumference - valueInCircumference}`,
     })
 
-    this.legendValue.innerHTML = Math.round((stepAdjustedAngle / (2 * Math.PI)) * this.range) + this.minValue
+    this.legendValue.innerHTML =
+      this.currency + (Math.round((stepAdjustedAngle / (2 * Math.PI)) * this.range) + this.minValue)
   }
 
   selectAndUpdateSize() {
