@@ -1,3 +1,16 @@
+/*
+CircularSlider class takes in one argument (Type: object)
+
+Options object properties:
+container (DOM element) - mandatory
+radius (Number) - mandatory
+color (String) - mandatory
+minValue (Number) - mandatory
+maxValue (Number) - mandatory
+step (Number) - mandatory
+name (String) - optional
+*/
+
 export default class CircularSlider {
   constructor(options) {
     this.container = options.container
