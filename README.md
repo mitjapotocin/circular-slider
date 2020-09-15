@@ -1,7 +1,7 @@
 # circular-slider
 
-Run:
+For development:
 
 `yarn install`
 
-`parcel index.html`
+`yarn start'
