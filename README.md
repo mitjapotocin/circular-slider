@@ -4,4 +4,4 @@ For development:
 
 `yarn install`
 
-`yarn start'
+`yarn start`
